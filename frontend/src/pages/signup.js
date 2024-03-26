@@ -17,7 +17,7 @@ function Signup(){
 
       if (response.ok) {
         const data = await response.json();
-        navigate("/home", {state:{name:data.name, token:data.token, user:data.user}});
+        navigate("/home", {state:{token:data.token}});
       }else{
         const data = await response.json();
         setError(data.message)

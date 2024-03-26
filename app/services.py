@@ -10,6 +10,12 @@ class CustomerService(BaseService):
         customer = self.repository.get_by_email(email, password)
         return customer
     
+    def get_for_user(self, id):
+        customer = self.repository.get_for_user(id)
+        if customer is None:
+            return None
+        return self.format_output(customer)
+    
     def pay_balance(self, customerId, payment):
         customer = self.repository.pay_balance(customerId, payment)
         return self.format_output(customer)
@@ -30,6 +36,12 @@ class SupplierService(BaseService):
     def get_by_email(self, email, password):
         supplier = self.repository.get_by_email(email, password)
         return supplier
+    
+    def get_for_user(self, id):
+        supplier = self.repository.get_for_user(id)
+        if supplier is None:
+            return None
+        return self.format_output(supplier)
 
     def format_output(self, supplier):
         return {

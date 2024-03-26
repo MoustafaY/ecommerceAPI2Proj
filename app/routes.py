@@ -256,6 +256,7 @@ def getProductsFromSupplier():
 @jwt_required()
 def createProduct():
     try:
+        print("ehllo")
         id = get_jwt_identity()
         data = request.json
         newProduct = productService.create(name=data.get("name"), quantity=data.get("quantity"), price=data.get("price"), supplierId=uuid.UUID(id))
@@ -275,6 +276,7 @@ def deleteProduct():
     try:
         data = request.json
         id = data.get("id")
+        print(id)
         productService.delete(uuid.UUID(id))
         return jsonify({"message": "product deleted"}), 200
     except NoResultFound:
@@ -286,8 +288,6 @@ def updateProduct():
     try:
         id = get_jwt_identity()
         data = request.json
-        if 'name' not in data or 'quantity' not in data or 'price' not in data:
-            raise BadRequest
         product = productService.update(uuid.UUID(id), uuid.UUID(data.get("id")), name=data.get("name"), quantity=data.get("quantity"), price=data.get("price"))
         return jsonify(product), 200
     except NoResultFound:
@@ -427,3 +427,17 @@ def createUser():
         return jsonify({'name': newUser['name'], 'token': access_token, 'user': user}), 200
     except IntegrityError:
         return jsonify({"message": "User already exists"}), 409
+
+@routesBP.route('/User', methods=['GET'])
+@jwt_required()
+def getUser():
+    try:
+        id = get_jwt_identity()
+        result = customerService.get_for_user(uuid.UUID(id))
+        if result is None:
+            result = supplierService.get_for_user(uuid.UUID(id))
+        return jsonify(result), 200
+    except NoResultFound:
+        return jsonify({"message": "User does not exist"}), 404
+
+    

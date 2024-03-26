@@ -17,6 +17,9 @@ class CustomerRepository(BaseRepository):
         customer.balance = customer.balance - payment
         self.save()
         return customer
+    
+    def get_for_user(self, id):
+        return db.session.query(self.model).filter_by(id=id).one_or_none()
 
     
     def get_by_email(self, email, password):
@@ -34,6 +37,9 @@ class SupplierRepository(BaseRepository):
         if supplier is None:
             raise NoResultFound
         return supplier
+    
+    def get_for_user(self, id):
+        return db.session.query(self.model).filter_by(id=id).one_or_none()
 
 class ProductRepository(BaseRepository):
     def __init__(self, model):

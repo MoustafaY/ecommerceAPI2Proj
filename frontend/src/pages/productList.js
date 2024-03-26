@@ -31,7 +31,7 @@ function ProductList(){
     }
 
     const onCreateClick = () => {
-        navigate("/productCreate", {state:{token:token, user:user}});
+        navigate("/productCreate", {state:{token:token}});
     }
     
     return (
@@ -40,7 +40,7 @@ function ProductList(){
             <ul>
                 {products.map((product) => (
                     <li key={product.id} onClick={() => onProductClick(product)} style={{ cursor: 'pointer' }} >
-                        {product.name}
+                        {product.name} 
                     </li>
                 ))}
             </ul>

@@ -10,7 +10,7 @@ function Update(){
 
   const handleSubmit = async (userData) => {
     try{
-        const path = "/" + user;
+        const path = "/" + user.user;
         const response = await fetch(path, {
         method: "PUT",
         headers: {
@@ -21,7 +21,7 @@ function Update(){
       });
       if (response.ok){
         const data =  await response.json();
-        navigate("/home", {state:{name:data.name, token:token, user:user}});
+        navigate("/home", {state:{token:token}});
       }
     }catch (error){
       console.error("Error", error);

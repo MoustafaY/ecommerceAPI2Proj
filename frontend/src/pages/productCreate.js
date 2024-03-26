@@ -1,28 +1,29 @@
 import React, {useState, useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function ProductView(){
+function ProductCreate(){
     const location = useLocation();
-    const [token, setToken] = useState(location.state.token || "");
-    const user = location.state.user;
+    const [token, setToken] = useState(location.state.token);
+    const [error, setError] = useState("");
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState(0);
     const [price, setPrice] = useState(0.0);
     const navigate = useNavigate();
 
-    const handleCreate = async (userData) => {
+    const handleCreate = async (productData) => {
         try {
           const response = await fetch("/Supplier/Products", {
             method: "POST",
             headers: {
+              Authorization: "Bearer " + token,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(userData),
+            body: JSON.stringify(productData),
           });
     
           if (response.ok) {
             const data = await response.json();
-            navigate("/home", {state:{name:data.name, token:data.token, user:user}});
+            navigate("/home", {state:{token:token}});
           }else{
             const data = await response.json();
             setError(data.message)
@@ -54,4 +55,4 @@ function ProductView(){
     );
 }
 
-export default ProductView;
+export default ProductCreate;

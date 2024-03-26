@@ -17,7 +17,7 @@ function Login(){
 
       if (response.ok) {
         const data = await response.json();
-        navigate("/home", {state:{name:data.name, token:data.token, user:data.user}});
+        navigate("/home", {state:{token:data.token}});
       }else{
         setError("Incorrect email or password")
       }
