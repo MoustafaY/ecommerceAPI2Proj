@@ -322,14 +322,13 @@ def createShipment():
     try:
         id = get_jwt_identity()
         data = request.json
-        inputProducts = data.get('products', [])
-        products = productService.process_shipment(uuid.UUID(id), inputProducts)
-        inventoryService.accept_shipment(products)
-        shipment = shipmentService.create(inputProducts, date=datetime.now(), supplierId=uuid.UUID(id))
+        inventory_products = productService.process_shipment(uuid.UUID(id), data.get("products", []))
+        inventoryService.accept_shipment(inventory_products)
+        shipment = shipmentService.create(inventory_products, date=datetime.now(), supplierId=uuid.UUID(id))
         return jsonify(shipment), 200
     except NoResultFound:
         return jsonify({"message": "product not found"}), 404
-    except BadRequest:
+    except ValueError:
         return jsonify({"message": "Invalid input"}), 400
     
 @routesBP.route('/Supplier/Shipment', methods=['GET'])
@@ -396,7 +395,6 @@ def login():
         user = data.get('user')
         email = data.get('email')
         password = data.get('password')
-        print(user)
         if user == 'Customer':
             currentUser = customerService.get_by_email(email, password)
         elif user == 'Supplier':

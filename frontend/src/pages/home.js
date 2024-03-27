@@ -65,6 +65,10 @@ function Home(){
   const handleProductsView = () =>{
     navigate("/productList", {state:{token:token, user:user}});
   };
+
+  const handleShipmentsView = () => {
+    navigate("/shipmentList", {state:{token:token, user:user}});
+  };
     
   return (
     <div>
@@ -73,6 +77,7 @@ function Home(){
         <button onClick={handleUpdate}>Change name</button>
         <button onClick={handleDelete}>Delete account</button>
         {user.user === "Supplier" && <button onClick={handleProductsView}>View Products</button>}
+        {user.user === "Supplier" && <button onClick={handleShipmentsView}>View Shipments</button>}
     </div>
   );
 }

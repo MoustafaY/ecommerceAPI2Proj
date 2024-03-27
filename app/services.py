@@ -54,6 +54,10 @@ class SupplierService(BaseService):
 class ProductService(BaseService):
     def __init__(self, repository):
         super().__init__(repository)
+    
+    def get_by_name(self, id, name):
+        product = self.repository.get_by_name(id, name)
+        return self.format_output(product)
 
     def get_all_by_supplier(self, id):
         queryProducts = self.repository.get_all_by_supplier(id)
@@ -69,22 +73,19 @@ class ProductService(BaseService):
         newProduct = self.repository.update(product, **kwargs)
         return self.format_output(newProduct)
 
-    def process_shipment(self, supplierId, inProducts):
-        products = []
-        for inProduct in inProducts:
-            product = self.repository.get_by_id(uuid.UUID(inProduct["productId"]))
-            if product.supplierId != supplierId:
-                raise PermissionError
-            if product.quantity < inProduct["quantity"] :
+    def process_shipment(self, supplierId, input_products):
+        inventory_products = []
+        for input_product in input_products:
+            product = self.repository.get_by_name(supplierId, input_product["name"])
+            if product.quantity - int(input_product["quantity"]) < 0:
                 raise ValueError
-            products.append({"name": product.name, "quantity": inProduct["quantity"], "price": product.price, "supplierId": product.supplierId, "productId": product.id})
-        
-        for inProduct in inProducts:
-            product = self.repository.get_by_id(uuid.UUID(inProduct["productId"]))
-            product.quantity = product.quantity - inProduct["quantity"]
 
-        self.repository.save()
-        return products
+        for input_product in input_products:
+            product = self.repository.get_by_name(supplierId, input_product["name"])
+            new_quantity = product.quantity - int(input_product["quantity"])
+            self.repository.update(product, quantity=new_quantity)
+            inventory_products.append({"id": product.id, "name": product.name, "quantity": input_product["quantity"], "price": product.price, "supplierId": supplierId})
+        return inventory_products
             
     
     def format_output(self, product):
@@ -199,7 +200,6 @@ class ShipmentService(BaseService):
     def add_to_shipment(self, shipment, products):
         self.repository.add_to_shipment(shipment, products)
 
-    
     def get_all_by_supplier(self, id):
         queryShipments = self.repository.get_all_by_supplier(id)
         shipments = []
@@ -238,7 +238,7 @@ class InventoryService(BaseService):
     def accept_shipment(self, products):
         outputProducts = []
         for product in products:
-            outputProduct = self.repository.create(name=product["name"], quantity=product["quantity"], price=product["price"], supplierId=product["supplierId"], productId=product["productId"])
+            outputProduct = self.repository.create(name=product["name"], quantity=int(product["quantity"]), price=product["price"], supplierId=product["supplierId"], productId=product["id"])
             outputProducts.append(self.format_output(outputProduct))
         return outputProducts
     

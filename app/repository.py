@@ -44,6 +44,12 @@ class SupplierRepository(BaseRepository):
 class ProductRepository(BaseRepository):
     def __init__(self, model):
         super().__init__(model)
+
+    def get_by_name(self, supplierId, name):
+        product = db.session.query(self.model).filter_by(supplierId=supplierId, name=name).one_or_none()
+        if product is None:
+            raise NoResultFound
+        return product
     
     def get_all_by_supplier(self, id):
         return db.session.query(self.model).filter_by(supplierId=id).all()
@@ -135,7 +141,7 @@ class ShipmentRepository(BaseRepository):
 
     def add_to_shipment(self, shipment, products):
         for product in products:
-            shipmentProduct = ShipmentProduct(name=product["name"], quantity=product["quantity"], productId=uuid.UUID(product["productId"]), shipmentId=shipment.id)
+            shipmentProduct = ShipmentProduct(name=product["name"], quantity=product["quantity"], productId=product["id"], shipmentId=shipment.id)
             shipment.shipmentProducts.append(shipmentProduct)
         self.save()
     
