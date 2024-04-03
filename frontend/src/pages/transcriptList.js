@@ -2,21 +2,22 @@ import React, {useState, useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-function ProductList(){
+function TranscriptList(){
     const token = Cookies.get("token");
-    const [products, setProducts] = useState([]);
+    const user = Cookies.get("user");
+    const [transcripts, setTranscripts] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try{
-                const response = await fetch("/Supplier/Products", {
+                const response = await fetch("/Customer/Transcripts", {
                     headers: {
                         Authorization: "Bearer " + token,
                     },
                 });
                 const result = await response.json();
-                setProducts(result);
+                setTranscripts(result);
             }catch(error){
                 console.error('Error fetching data: ' , error);
             }
@@ -25,27 +26,23 @@ function ProductList(){
         fetchData();
     }, []);
 
-    const onProductClick = (product) =>{
-        navigate("/productView", {state:{product:product}});
-    }
-
-    const onCreateClick = () => {
-        navigate("/productCreate");
+    const onTranscriptClick = (transcript) =>{
+        Cookies.set("transcript", transcript);
+        navigate("/transcriptView", {state:{transcript:transcript}});
     }
     
     return (
         <div style={{height: '200px', overflowY: 'auto'}}>
-            <h1>Products</h1>
+            <h1>transcripts</h1>
             <ul>
-                {products.map((product) => (
-                    <li key={product.id} onClick={() => onProductClick(product)} style={{ cursor: 'pointer' }} >
-                        {product.name} 
+                {transcripts.map((transcript) => (
+                    <li key={transcript.id} onClick={() => onTranscriptClick(transcript)} style={{ cursor: 'pointer' }} >
+                        {transcript.date} 
                     </li>
                 ))}
             </ul>
-            <button onClick={onCreateClick}>Create new product</button>
         </div>
     );
 }
 
-export default ProductList;
+export default TranscriptList;

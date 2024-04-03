@@ -9,6 +9,7 @@ class CustomerRepository(BaseRepository):
         super().__init__(model)
 
     def pay_balance(self, customerId, payment):
+        payment = float(payment)
         customer = self.get_by_id(customerId)
         if customer.balance < payment:
             raise ValueError
@@ -27,6 +28,11 @@ class CustomerRepository(BaseRepository):
         if customer is None:
             raise NoResultFound
         return customer
+    
+    def get_balance(self, id):
+        customer = self.get_by_id(id)
+        return customer.balance
+
 
 class SupplierRepository(BaseRepository):
     def __init__(self, model):
@@ -65,13 +71,13 @@ class ShoppingCartRepository(BaseRepository):
         return shoppingCart
     
     def get_product_by_id(self, productId, shoppingCartId):
-        return db.session.query(ShoppingCartProduct).filter_by(shoppingCartId=shoppingCartId, inventoryId=productId).one_or_none()
+        return db.session.query(ShoppingCartProduct).filter_by(shoppingCartId=shoppingCartId, inventoryId=uuid.UUID(productId)).one_or_none()
 
     def add_to_cart(self, customerId, inProduct):
         shoppingCart = self.get_by_customer(customerId)
         product = self.get_product_by_id(inProduct["id"], shoppingCart.id)
         if product is None:
-            newProduct = ShoppingCartProduct(name=inProduct["name"], quantity=inProduct["quantity"], price=inProduct["price"], shoppingCartId=shoppingCart.id, inventoryId=inProduct["id"])
+            newProduct = ShoppingCartProduct(name=inProduct["name"], quantity=inProduct["quantity"], price=inProduct["price"], shoppingCartId=shoppingCart.id, inventoryId=uuid.UUID(inProduct["id"]))
             shoppingCart.shoppingCartProducts.append(newProduct)
         else:
             product.quantity = product.quantity + inProduct["quantity"]
@@ -81,7 +87,7 @@ class ShoppingCartRepository(BaseRepository):
     
     def update_cart(self, customerId, inProduct):
         shoppingCart = self.get_by_customer(customerId)
-        product = self.get_product_by_id(uuid.UUID(inProduct['id']), shoppingCart.id)
+        product = self.get_product_by_id(inProduct['id'], shoppingCart.id)
         if product is None:
             raise NoResultFound
         product.quantity = inProduct["quantity"]
@@ -101,8 +107,7 @@ class ShoppingCartRepository(BaseRepository):
     
     def clear_cart(self, customerId):
         shoppingCart = self.get_by_customer(customerId)
-        for product in shoppingCart.shoppingCartProducts:
-            shoppingCart.shoppingCartProducts.remove(product)
+        shoppingCart.shoppingCartProducts = []
         shoppingCart.totalSum = 0.0
         self.save()
 
@@ -110,7 +115,7 @@ class ShoppingCartRepository(BaseRepository):
     def calculateSum(self, products):
         sum = 0
         for product in products:
-            sum+= (product.price*product.quantity)
+            sum+= (float(product.price)*int(product.quantity))
         return sum
 
 

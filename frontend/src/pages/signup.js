@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {Link, useNavigate} from "react-router-dom";
+import Cookies from "js-cookie";
 
 function Signup(){
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ function Signup(){
 
       if (response.ok) {
         const data = await response.json();
-        navigate("/home", {state:{token:data.token}});
+        Cookies.set("token", data.token);
+        navigate("/home");
       }else{
         const data = await response.json();
         setError(data.message)
@@ -33,33 +35,51 @@ function Signup(){
           <h1>Sign up</h1>
           {error && <p>{error}</p>}
           <div>
-            <SignupCard onSign={handleSignup} />
+            <SignupCard onSign={handleSignup} setError={setError} />
           </div>
         </>
       );
 }
 
-function SignupCard({onSign}){
+function SignupCard({onSign, setError}){
   return(
     <>
-      <SignupForm onSign={onSign} />
+      <SignupForm onSign={onSign} setError={setError} />
     </>
   );
 }
 
-function SignupForm({onSign}){
+function SignupForm({onSign, setError}){
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [type, setType] = useState("Customer");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    onSign({"name": name, "email": email, "password": password, "user": type});
+  const handleSubmit = () => {
+    if(validate()){
+      Cookies.set("user", type);
+      onSign({"name": name, "email": email, "password": password, "user": type});
+    }
+  }
+
+  const validate = () =>{
+    if(name === ''){
+      setError("Name is required");
+      return false;
+    }
+    else if(email === ''){
+      setError("Email is required");
+      return false;
+    }
+    else if(password === ''){
+      setError("Password is required");
+      return false;
+    }
+    return true;
   }
 
   return(
-    <form onSubmit={handleSubmit}>
+    <div>
         <label>Name:
             <input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)}  />
         </label>
@@ -75,8 +95,8 @@ function SignupForm({onSign}){
           <option value="Supplier">Supplier</option>
         </select>
         </label>
-          <input type="submit" />
-    </form>
+          <button onClick={handleSubmit}>Sign in</button>
+    </div>
   )
 }
 

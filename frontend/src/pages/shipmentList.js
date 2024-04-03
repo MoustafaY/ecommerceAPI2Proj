@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function ShipmentList(){
     const location = useLocation();
-    const [token, setToken] = useState(location.state.token || "");
-    const user = location.state.user;
+    const token = Cookies.get("token");
     const [shipments, setShipments] = useState([]);
     const navigate = useNavigate();
 
@@ -27,11 +27,11 @@ function ShipmentList(){
     }, []);
 
     const onshipmentClick = (shipment) =>{
-        navigate("/shipmentView", {state:{token:token, shipment:shipment}});
+        navigate("/shipmentView", {state:{shipment:shipment}});
     }
 
     const onCreateClick = () => {
-        navigate("/shipmentCreate", {state:{token:token}});
+        navigate("/shipmentCreate");
     }
     
     return (

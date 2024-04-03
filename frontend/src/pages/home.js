@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function Home(){
-  const location = useLocation();
-  const [user, setuser] = useState({});
-  const [token, setToken] = useState(location.state.token || "");
+  const user = Cookies.get("user");
+  const token = Cookies.get("token");
+  const [name, setName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,7 +17,7 @@ function Home(){
                 },
             });
             const result = await response.json();
-            setuser(result);
+            setName(result.name);
         }catch(error){
             console.error('Error fetching data: ' , error);
         }
@@ -26,7 +27,7 @@ function Home(){
 }, []);
 
   const handleUpdate = () => {
-    navigate("/update", {state:{token:token, user:user}});
+    navigate("/update");
   };
 
   const handleLogout = async () => {
@@ -38,6 +39,7 @@ function Home(){
         },
       });
       if (response.ok){
+        Cookies.remove("token");
         navigate("/");
       }
     }catch (error){
@@ -63,21 +65,36 @@ function Home(){
   };
 
   const handleProductsView = () =>{
-    navigate("/productList", {state:{token:token, user:user}});
+    navigate("/productList");
   };
 
   const handleShipmentsView = () => {
-    navigate("/shipmentList", {state:{token:token, user:user}});
+    navigate("/shipmentList");
   };
+
+  const handleShoppingCartView = () => {
+    navigate("/shoppingCart");
+  }
+
+  const handleTranscriptList = () =>{
+    navigate("/transcriptList");
+  }
+  
+  const handleBalanceView = () => {
+    navigate("/balanceView");
+  }
     
   return (
     <div>
-        <h1>Welcome, {user.name}</h1>
+        <h1>Welcome, {name}</h1>
         <button onClick={handleLogout}>Log out</button>
         <button onClick={handleUpdate}>Change name</button>
         <button onClick={handleDelete}>Delete account</button>
-        {user.user === "Supplier" && <button onClick={handleProductsView}>View Products</button>}
-        {user.user === "Supplier" && <button onClick={handleShipmentsView}>View Shipments</button>}
+        {user === "Supplier" && <button onClick={handleProductsView}>View Products</button>}
+        {user === "Supplier" && <button onClick={handleShipmentsView}>View Shipments</button>}
+        {user === "Customer" && <button onClick={handleShoppingCartView}>View Shopping cart</button>}
+        {user === "Customer" && <button onClick={handleTranscriptList}>View Transcripts</button>}
+        {user === "Customer" && <button onClick={handleBalanceView}>View Balance</button>}
     </div>
   );
 }

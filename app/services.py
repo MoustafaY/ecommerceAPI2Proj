@@ -19,6 +19,9 @@ class CustomerService(BaseService):
     def pay_balance(self, customerId, payment):
         customer = self.repository.pay_balance(customerId, payment)
         return self.format_output(customer)
+    
+    def get_balance(self, customerId):
+        return self.repository.get_balance(customerId)
 
     def format_output(self, customer):
         return {
@@ -104,14 +107,13 @@ class ShoppingCartService(BaseService):
         shoppingCart = self.repository.get_by_customer(customerId)
         return self.format_output(shoppingCart)
     
-    def add_to_cart(self, customerId, products):
-        for product in products:
-            self.repository.add_to_cart(customerId, product)
+    def add_to_cart(self, customerId, product):
+        self.repository.add_to_cart(customerId, product)
         return self.get_by_customer(customerId)
     
-    def update_cart(self, customerId, products):
-        for product in products:
-            self.repository.update_cart(customerId, product)
+    def update_cart(self, customerId, product):
+
+        self.repository.update_cart(customerId, product)
         return self.get_by_customer(customerId)
     
     def remove_from_cart(self, customerId, productId):
@@ -170,6 +172,7 @@ class TranscriptService(BaseService):
         return {
             "id": transcript.id,
             "sum": transcript.totalSum,
+            "date": transcript.date,
             "products": products
         }
     

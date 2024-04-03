@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function ShipmentCreate(){
-    const location = useLocation();
-    const [token, setToken] = useState(location.state.token);
+    const token = Cookies.get("token");
     const [error, setError] = useState("");
     const [name, setName] = useState("");
     const [products, setProducts] = useState([]);
@@ -43,7 +43,7 @@ function ShipmentCreate(){
     
           if (response.ok) {
             const data = await response.json();
-            navigate("/home", {state:{token:token}});
+            navigate("/home");
           }else{
             const data = await response.json();
             setError(data.message)
@@ -55,17 +55,31 @@ function ShipmentCreate(){
       };
 
     const handleClick = () => {
-        shipment.push({"name": name, "quantity": quantity});
-        setQuantity(0);
+        if(validate()){
+          shipment.push({"name": name, "quantity": quantity});
+          setQuantity(0);
+        }
     }
 
     const handleSubmit = () => {
         handleCreate({"products": shipment});
     }
+
+    const validate = () => {
+      if(quantity <= 0){
+        setError("Invalid quantity amount");
+        return false;
+      }else if(shipment.length){
+        setError("Shipment is empty");
+        return false;
+      }
+      return true;
+    }
     
     return (
         <>
             <div>
+              {error && <p>{error}</p>}
                 <label>Name:
                     <select value={name} onChange={(e) => setName(e.target.value)}>
                       {products.map((fetch_product, index) => (

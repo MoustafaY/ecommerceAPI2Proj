@@ -1,4 +1,4 @@
-from app.extensions import db
+from app.extensions import db, unique_name_per_supplier
 import uuid
 
 class Customer(db.Model):
@@ -14,6 +14,7 @@ class Customer(db.Model):
         super(Customer, self).__init__(*args, **kwargs)
         if not self.shoppingCart:
             self.shoppingCart = ShoppingCart(customerId=self.id)
+
 
 class ShoppingCart(db.Model):
     id = db.Column(db.UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
@@ -82,6 +83,10 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     supplierId = db.Column(db.UUID(as_uuid=True), db.ForeignKey('supplier.id'), nullable=False)
+
+    __table_args__ = (
+        unique_name_per_supplier,
+    )
 
 class BlockListToken(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)

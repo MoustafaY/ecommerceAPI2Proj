@@ -2,24 +2,25 @@ import React, {useState, useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-function ShipmentView(){
+function TranscriptView(){
     const location = useLocation();
     const token = Cookies.get("token");
-    const shipment = location.state.shipment;
+    const transcript = location.state.transcript;
     const navigate = useNavigate();
     
     return (
         <div style={{height: '200px', overflowY: 'auto'}}>
-            <h1>{shipment.date} Shipment</h1> 
+            <h1>{transcript.date} transcript</h1> 
             <ul>
-                {shipment.products.map((product, index) => (
+                {transcript.products.map((product, index) => (
                    <li key={index}>
-                    {product.name} {product.quantity}
+                    {product.name} {product.quantity} {product.price}
                    </li> 
                 ))}
             </ul>
+            <span>Sum: {transcript.sum}</span>
         </div>
     );
 }
 
-export default ShipmentView;
+export default TranscriptView;

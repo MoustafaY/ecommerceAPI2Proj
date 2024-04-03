@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function ProductCreate(){
-    const location = useLocation();
-    const [token, setToken] = useState(location.state.token);
+    const token = Cookies.get("token");
     const [error, setError] = useState("");
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState(0);
@@ -23,7 +23,7 @@ function ProductCreate(){
     
           if (response.ok) {
             const data = await response.json();
-            navigate("/home", {state:{token:token}});
+            navigate("/home");
           }else{
             const data = await response.json();
             setError(data.message)
@@ -34,13 +34,27 @@ function ProductCreate(){
         }
       };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        handleCreate({"name": name, "price": price, "quantity": quantity});
+    const handleSubmit = () => {
+        if(validate()){
+          handleCreate({"name": name, "price": price, "quantity": quantity});
+        }
+    }
+
+    const validate = () => {
+      if(name === ''){
+        setError("Name is required");
+        return false;
+      }
+      else if(price <= 0.0 || quantity <= 0){
+        setError("Invalid input");
+        return false;
+      }
+      return true;
     }
     
     return (
-        <form onSubmit={handleSubmit}>
+        <div>
+          {error && <span>{error}</span>}
             <label>Name:
                 <input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)}  />
             </label>
@@ -50,8 +64,8 @@ function ProductCreate(){
             <label>Price:
                 <input type="number" step="0.1" name="price" value={price} onChange={(e) => setPrice(e.target.value)} />
             </label>
-            <input type="submit" />
-        </form>
+            <button onClick={handleSubmit}>Create product</button>
+        </div>
     );
 }
 
