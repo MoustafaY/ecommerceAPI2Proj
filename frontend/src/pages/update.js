@@ -50,13 +50,19 @@ function Update(){
     
   return (
     <div>
-      {error && <p>{error}</p>}
-        <form onSubmit={handleClick}>
-            <label>New name:
-            <input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)}  />
-            </label>
-            <input type="submit" />
-        </form>
+      <div class="row" style={{paddingTop:'10px'}}>
+          <div class="d-flex justify-content-center">
+              <div class="card" style={{padding:'10px'}}>
+                  {error && <p class="error">{error}</p>}
+                  <div class="card-body">
+                      <div class="row d-flex justify-content-start">
+                        <input class="form-control w-100" placeholder="New name" type="text" name="name" value={name} onChange={(e) => setName(e.target.value)}  />
+                        <button class="btn btn-sm custom-button" onClick={handleClick}>Submit</button>
+                      </div>
+                  </div>
+                </div>
+            </div>
+          </div>
     </div>
   );
 }

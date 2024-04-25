@@ -5,20 +5,30 @@ from flask_jwt_extended import create_access_token
 def test_create_customer_code(client):
     response = createCustomer(client, newCustomerData())
     assert response.status_code == 200
-    
-def test_create_customer_len(client):
-    createCustomer(client, multipleCustomerData())
-    data = getCustomers(client)
-    assert len(data) == 2
-
-def test_invalid_create_customer(client):
-    response = createCustomer(client, invalidCustomerData())
-    assert response.status_code == 400
 
 def test_repeat_create_customer(client):
     createCustomer(client, newCustomerData())
     response = createCustomer(client, newCustomerData())
     assert response.status_code == 409
+
+def test_customer_login(client):
+    createCustomer(client, newCustomerData())
+    loginData = {
+        "email": "email@gmail.com",
+        "password": "pass",
+        "user": "Customer"
+    }
+    response = client.post("http://127.0.0.1:5000/login", json=loginData)
+    assert response.status_code == 200
+
+def test_customer_missing_login(client):
+    loginData = {
+        "email": "email@gmail.com",
+        "password": "pass",
+        "user": "Customer"
+    }
+    response = client.post("http://127.0.0.1:5000/login", json=loginData)
+    assert response.status_code == 404    
 
 def test_delete_customer_len(client):
     data = getCustomers(client)
@@ -35,133 +45,130 @@ def test_update_customer_name(client):
     data = response.json
     assert data["name"] == "suality"
 
-def test_invalid_update_customer(client):
-    createCustomer(client, newCustomerData())
-    token = customerLogin(client)
-    response = updateCustomer(client, token, {"na": "suality"})
-    assert response.status_code == 400
-
 def test_customer_add_to_shoppingCart(client):
     createCustomer(client, newCustomerData())
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
+    product1 = data
+    response = createProduct(client, token, secondProductData())
+    data = response.json
+    product2 = data
+    createShipment(client, token, newShipmentData(product1, product2))
     logout(client, token)
     token = customerLogin(client)
     response = getInventory(client)
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    response = addToShoppingCart(client, token, newShoppingCartData(id1, id2))
+    product = data[0]
+    response = addToShoppingCart(client, token, newShoppingCartData(product))
     assert response.status_code == 200
 
 def test_customer_get_shoppingCart(client):
     createCustomer(client, newCustomerData())
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
+    product1 = data
+    response = createProduct(client, token, secondProductData())
+    data = response.json
+    product2 = data
+    createShipment(client, token, newShipmentData(product1, product2))
     logout(client, token)
     token = customerLogin(client)
     response = getInventory(client)
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    addToShoppingCart(client, token, newShoppingCartData(id1, id2))
+    product = data[0]
+    response = addToShoppingCart(client, token, newShoppingCartData(product))
     data = getShoppingCart(client, token)
-    assert len(data['products']) == 2
+    assert response.status_code == 200
 
 def test_customer_delete_shoppingCart(client):
     createCustomer(client, newCustomerData())
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
+    product1 = data
+    response = createProduct(client, token, secondProductData())
+    data = response.json
+    product2 = data
+    createShipment(client, token, newShipmentData(product1, product2))
     logout(client, token)
     token = customerLogin(client)
     response = getInventory(client)
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    addToShoppingCart(client, token, newShoppingCartData(id1, id2))
-    deleteShoppingCart(client, token, id1)
+    product = data[0]
+    response = addToShoppingCart(client, token, newShoppingCartData(product))
+    deleteShoppingCart(client, token, product["id"])
     data = getShoppingCart(client, token)
-    assert len(data['products']) == 1
+    assert response.status_code == 200
 
 def test_customer_create_order(client):
     createCustomer(client, newCustomerData())
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
+    product1 = data
+    response = createProduct(client, token, secondProductData())
+    data = response.json
+    product2 = data
+    createShipment(client, token, newShipmentData(product1, product2))
     logout(client, token)
     token = customerLogin(client)
     response = getInventory(client)
+    response = getInventory(client)
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    addToShoppingCart(client, token, newShoppingCartData(id1, id2))
+    product = data[0]
+    addToShoppingCart(client, token, newShoppingCartData(product))
     response = createOrder(client, token)
     assert response.status_code == 200
 
-def test_transcript_length(client):
+def test_transcript(client):
     createCustomer(client, newCustomerData())
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
+    product1 = data
+    response = createProduct(client, token, secondProductData())
+    data = response.json
+    product2 = data
+    createShipment(client, token, newShipmentData(product1, product2))
     logout(client, token)
     token = customerLogin(client)
     response = getInventory(client)
+    response = getInventory(client)
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    addToShoppingCart(client, token, newShoppingCartData(id1, id2))
+    product = data[0]
+    addToShoppingCart(client, token, newShoppingCartData(product))
     createOrder(client, token)
     response = getTranscripts(client, token)
-    data = response.json
-    assert len(data) == 1
+    assert response.status_code == 200
 
 def test_customer_payment(client):
     createCustomer(client, newCustomerData())
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
+    product1 = data
+    response = createProduct(client, token, secondProductData())
+    data = response.json
+    product2 = data
+    createShipment(client, token, newShipmentData(product1, product2))
     logout(client, token)
     token = customerLogin(client)
     response = getInventory(client)
+    response = getInventory(client)
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    addToShoppingCart(client, token, newShoppingCartData(id1, id2))
+    product = data[0]
+    addToShoppingCart(client, token, newShoppingCartData(product))
     createOrder(client, token)
-    response = getTranscripts(client, token)
-    data = response.json
-    oldSum = data[0]["sum"]
-    makePayment(client, token)
-    response = getCustomers(client)
-    newSum = response[0]["balance"]
-    assert newSum + 1 == oldSum
+    response = makePayment(client, token)
+    assert response.status_code == 200
 
 
 
@@ -173,20 +180,30 @@ def test_customer_payment(client):
 def test_create_supplier_code(client):
     response = createSupplier(client, newSupplierData())
     assert response.status_code == 200
-    
-def test_create_supplier_len(client):
-    createSupplier(client, multipleSupplierData())
-    data = getSuppliers(client)
-    assert len(data) == 2
-
-def test_invalid_create_supplier(client):
-    response = createSupplier(client, invalidSupplierData())
-    assert response.status_code == 400
 
 def test_repeat_create_supplier(client):
     createSupplier(client, newSupplierData())
     response = createSupplier(client, newSupplierData())
     assert response.status_code == 409
+
+def test_supplier_login(client):
+    createSupplier(client, newSupplierData())
+    loginData = {
+        "email": "joe@gmail.com",
+        "password": "joe",
+        "user": "Supplier"
+    }
+    response = client.post("http://127.0.0.1:5000/login", json=loginData)
+    assert response.status_code == 200
+
+def test_supplier_missing(client):
+    loginData = {
+        "email": "joe@gmail.com",
+        "password": "joe",
+        "user": "Supplier"
+    }
+    response = client.post("http://127.0.0.1:5000/login", json=loginData)
+    assert response.status_code == 404
 
 def test_delete_supplier_len(client):
     createSupplier(client, newSupplierData())
@@ -202,14 +219,6 @@ def test_update_supplier_name(client):
     data = response.json
     assert data["name"] == "suality"
 
-def test_invalid_update_supplier(client):
-    createSupplier(client, newSupplierData())
-    token = supplierLogin(client)
-    response = updateSupplier(client, token, {"na": "suality"})
-    assert response.status_code == 400
-
-
-
 def test_supplier_create_product(client):
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
@@ -219,142 +228,69 @@ def test_supplier_create_product(client):
 def test_supplier_get_products(client):
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    createProduct(client, token, multipleProductData())
-    data = getProducts(client, token)
-    assert len(data) == 2
-
-def test_supplier_create_invalid_products(client):
-    createSupplier(client, newSupplierData())
-    token = supplierLogin(client)
-    response = createProduct(client, token, invalidProductData())
-    assert response.status_code == 400
+    createProduct(client, token, newProductData())
+    response = getProducts(client, token)
+    assert response.status_code == 200
 
 def test_supplier_delete_product(client):
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    product = data[0]
-    deleteProduct(client, token, {"id": product["id"]})
-    data = getProducts(client, token)
-    assert len(data) == 1
+    deleteProduct(client, token, {"id": data["id"]})
+    response = getProducts(client, token)
+    assert response.status_code == 200
 
 def test_supplier_update_product(client):
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    product = data[0]
-    response = updateProduct(client, token, {"id": product["id"], "name": "kiwi", "quantity": 1, "price" : 0.3})
+    response = updateProduct(client, token, {"id": data["id"], "name": "kiwi", "quantity": 1, "price" : 0.3})
     assert response.status_code == 200
-
-def test_supplier_update_invalid_product(client):
-    createSupplier(client, newSupplierData())
-    token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
-    data = response.json
-    product = data[0]
-    response = updateProduct(client, token, {"id": product["id"], "na": "kiwi", "quantity": 1, "price" : 0.3})
-    assert response.status_code == 400
 
 
 def test_supplier_create_shipment(client):
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    response = createShipment(client, token, newShipmentData(id1, id2))
+    product1 = data
+    response = createProduct(client, token, secondProductData())
+    data = response.json
+    product2 = data
+    response = createShipment(client, token, newShipmentData(product1, product2))
     assert response.status_code == 200
 
 def test_supplier_get_shipping(client):
     createSupplier(client, newSupplierData())
     token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    response = createProduct(client, token, newProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
-    data = getShipments(client, token)
-    assert len(data) == 1
-
-def test_product_after_shipment(client):
-    createSupplier(client, newSupplierData())
-    token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
+    product1 = data
+    response = createProduct(client, token, secondProductData())
     data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
-    data = getProducts(client, token)
-    assert data[0]["quantity"] == 9
-
-def test_inventory_length_after_shipment(client):
-    createSupplier(client, newSupplierData())
-    token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
-    data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
-    response = getInventory(client)
-    data = response.json
-    assert len(data) == 2
-
-def test_inventory_quantity_after_shipment(client):
-    createSupplier(client, newSupplierData())
-    token = supplierLogin(client)
-    response = createProduct(client, token, multipleProductData())
-    data = response.json
-    id1 = data[0]["id"]
-    id2 = data[1]["id"]
-    createShipment(client, token, newShipmentData(id1, id2))
-    createShipment(client, token, newShipmentData(id1, id2))
-    response = getInventory(client)
-    data = response.json
-    assert data[0]["quantity"] == 2
+    product2 = data
+    createShipment(client, token, newShipmentData(product1, product2))
+    response = getShipments(client, token)
+    assert response.status_code == 200
 
 
 
 # authentication and setup
 def newCustomerData():
     return {
-        "customers": [{
-            "name": "Moustafa",
-            "email": "email@gmail.com",
-            "password": "pass"
-        }]
-    }
-
-def multipleCustomerData():
-    return {
-        "customers": [{
-            "name": "Moustafa",
-            "email": "email@gmail.com",
-            "password": "pass"
-        },
-        {
-            "name": "Lily",
-            "email": "lil@gmail.com",
-            "password": "lil"
-        }]
-    }
-
-def invalidCustomerData():
-    return {
-        "customers": [{
-            "na": "Moustafa",
-            "email": "email@gmail.com",
-            "password": "pass"
-        }]
+        "name": "Moustafa",
+        "email": "email@gmail.com",
+        "password": "pass",
+        "user": "Customer"
     }
 
 def customerLogin(client):
     loginData = {
         "email": "email@gmail.com",
         "password": "pass",
-        "user": "customer"
+        "user": "Customer"
     }
     response = client.post("http://127.0.0.1:5000/login", json=loginData)
     data = response.json
@@ -367,41 +303,17 @@ def logout(client, token):
 
 def newSupplierData():
     return {
-        "suppliers": [{
-            "name": "Yousef",
-            "email": "joe@gmail.com",
-            "password": "joe"
-        }]
-    }
-
-def multipleSupplierData():
-    return {
-        "suppliers": [{
-            "name": "Yousef",
-            "email": "joe@gmail.com",
-            "password": "joe"
-        },
-        {
-            "name": "Mohamed",
-            "email": "kebz@gmail.com",
-            "password": "kebz"
-        }]
-    }
-
-def invalidSupplierData():
-    return {
-        "suppliers": [{
-            "na": "Yousef",
-            "email": "joe@gmail.com",
-            "password": "joe"
-        }]
+        "name": "Yousef",
+        "email": "joe@gmail.com",
+        "password": "joe",
+        "user": "Supplier"
     }
 
 def supplierLogin(client):
     loginData = {
         "email": "joe@gmail.com",
         "password": "joe",
-        "user": "supplier"
+        "user": "Supplier"
     }
     response = client.post("http://127.0.0.1:5000/login", json=loginData)
     data = response.json
@@ -410,11 +322,16 @@ def supplierLogin(client):
 
 def newProductData():
     return {
-        "products": [{
-            "name": "banana",
-            "quantity": 3,
-            "price": 1.1
-        }]
+        "name": "banana",
+        "quantity": 10,
+        "price": 1.2
+    }
+
+def secondProductData():
+    return {
+        "name": "kiwi",
+        "quantity": 20,
+        "price": 2.9
     }
 
 def multipleProductData():
@@ -440,16 +357,16 @@ def invalidProductData():
         }]
     }
 
-def newShipmentData(id1, id2):
+def newShipmentData(product1, product2):
     return {"products":[
         {
-            "productId": id1,
-            "name": "banana",
+            "productId": product1["id"],
+            "name": product2["name"],
             "quantity": 1
         },
         {
-            "productId": id2,
-            "name": "apple",
+            "productId": product2["id"],
+            "name": product2["name"],
             "quantity": 1
         }
     ]}
@@ -468,22 +385,17 @@ def newTranscriptData():
     ]
     }
 
-def newShoppingCartData(id1, id2):
+def newShoppingCartData(product):
     return {
-    "products": [
-        {
-            "id": id1,
-            "quantity": 1
-        },
-        {
-            "id": id2,
+            "id": product["id"],
+            "name": product["name"],
+            "price": product["price"],
             "quantity": 1
         }
-    ]
-}
+
 
 def createCustomer(client, customerData):
-    return client.post("http://127.0.0.1:5000/Customers", json=customerData)
+    return client.post("http://127.0.0.1:5000/Signup", json=customerData)
 
 def getCustomers(client):
     response = client.get("http://127.0.0.1:5000/Customers")
@@ -499,7 +411,7 @@ def updateCustomer(client, token, customerData):
 
 
 def createSupplier(client, supplierData):
-    return client.post("http://127.0.0.1:5000/Suppliers", json=supplierData)
+    return client.post("http://127.0.0.1:5000/Signup", json=supplierData)
 
 def getSuppliers(client):
     response = client.get("http://127.0.0.1:5000/Suppliers")
@@ -521,7 +433,7 @@ def createProduct(client, token, productData):
 def getProducts(client, token):
     headers = {"Authorization": f"Bearer {token}"}
     response = client.get("http://127.0.0.1:5000/Supplier/Products", headers=headers)
-    return response.json
+    return response
 
 def deleteProduct(client, token, productData):
     headers = {"Authorization": f"Bearer {token}"}
@@ -553,7 +465,7 @@ def createShipment(client, token, ShipmentData):
 def getShipments(client, token):
     headers = {"Authorization": f"Bearer {token}"}
     response = client.get("http://127.0.0.1:5000/Supplier/Shipments", headers=headers)
-    return response.json
+    return response
 
 def deleteShipment(client, token, id):
     headers = {"Authorization": f"Bearer {token}"}

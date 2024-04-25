@@ -18,6 +18,9 @@ import TranscriptList from "./pages/transcriptList";
 import TranscriptView from "./pages/transcriptView";
 import BalanceView from "./pages/balanceView";
 import Navbar from "./navbar";
+import 'bootstrap/dist/css/bootstrap.css';
+import './styles.css'
+
 
 
 export default function App() {

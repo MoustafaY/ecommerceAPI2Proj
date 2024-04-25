@@ -25,31 +25,34 @@ function Signup(){
         setError(data.message)
       }
     }catch(error){
-      console.error("Error: ". error);
-      setError("An error occurred. Please try again later.");
+      console.error("Error: " + error);
+      setError(error.message);
     }
   };
 
       return (
         <>
-          <h1>Sign up</h1>
-          {error && <p>{error}</p>}
+          <div class="d-flex justify-content-center">
+            <h1 style={{color:'#FFF4E9'}}>Be a Minizon member</h1>
+          </div>
           <div>
-            <SignupCard onSign={handleSignup} setError={setError} />
+            <SignupCard onSign={handleSignup} setError={setError} error={error} />
           </div>
         </>
       );
 }
 
-function SignupCard({onSign, setError}){
+function SignupCard({onSign, setError, error}){
   return(
-    <>
-      <SignupForm onSign={onSign} setError={setError} />
-    </>
+    <div class="container d-flex justify-content-center">
+      <div class="card">
+      <SignupForm onSign={onSign} setError={setError} error={error} />
+    </div>
+    </div>
   );
 }
 
-function SignupForm({onSign, setError}){
+function SignupForm({onSign, setError, error}){
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -79,23 +82,32 @@ function SignupForm({onSign, setError}){
   }
 
   return(
-    <div>
-        <label>Name:
-            <input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)}  />
-        </label>
-        <label>Email:
-            <input type="text" name="username" value={email} onChange={(e) => setEmail(e.target.value)}  />
-        </label>
-        <label>Password:
-            <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </label>
-        <label>Type of user:
-        <select value={type} onChange={(e) => setType(e.target.value)}>
-          <option value="Customer">Customer</option>
-          <option value="Supplier">Supplier</option>
-        </select>
-        </label>
-          <button onClick={handleSubmit}>Sign in</button>
+    <div class="card-body">
+      {error && <div class="row"><div class="col d-flex justify-content-center"><p class="error">{error}</p></div></div>}
+      <div class="row">
+        <div class="col d-flex justify-content-center">
+          <input class="form-control w-100" type="text" placeholder="Name" name="name" value={name} onChange={(e) => setName(e.target.value)}  />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col d-flex justify-content-center">
+          <input class="form-control w-100" type="text" placeholder="Email" name="username" value={email} onChange={(e) => setEmail(e.target.value)}  />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col d-flex justify-content-center">
+          <input class="form-control w-100" type="password" placeholder="Password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </div>
+      </div>
+        <div class="row">
+          <div class="col d-flex justify-content-start">
+            <select value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="Customer">Customer</option>
+            <option value="Supplier">Supplier</option>
+            </select>
+          </div>
+        </div>
+          <button class="btn btn-primary w-100 custom-button" onClick={handleSubmit}>Sign in</button>
     </div>
   )
 }

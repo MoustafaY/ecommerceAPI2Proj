@@ -48,6 +48,7 @@ function ProductView(){
             if(response.ok){
                 const data = await response.json();
                 setProduct(data);
+                setError("");
             }
             else{
                 const data = await response.json();
@@ -97,17 +98,28 @@ function ProductView(){
     }
     
     return (
-        <div style={{height: '200px', overflowY: 'auto'}}>
-            <h1>{product.name}</h1> {!updateQuantity && <button onClick={handleDelete}>Delete product</button>}
-            {error && <p>{error}</p>}
-            <ul>
-                <li>
-                    Quantity: {updateQuantity && <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)}></input>} {!updateQuantity && product.quantity} <button onClick={handleQuantity}>{updateQuantity ? 'Submit Change' : 'Change quantity'}</button> 
-                </li>
-                <li>
-                    Price: {updatePrice && <input type="number" step="0.1" value={price} onChange={(e) => setPrice(e.target.value)}></input>} {!updatePrice && product.price} <button onClick={handlePrice}>{updatePrice ? 'Submit Change' : 'Change price'}</button>
-                </li>
-            </ul>
+        <div>
+            <div class="d-flex justify-content-center">
+                <h1 class="d-flex justify-content-center" style={{color:'#FFF4E9'}}>{product.name}</h1>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div class="card d-flex justify-content-center">
+                    {error && <p class="error">{error}</p>}
+                    <div class="card-body justify-content-evenly">
+                            
+                            <span>
+                                Quantity: {updateQuantity && <input class="custom-input" type="number" style={{width:'10x'}} value={quantity} onChange={(e) => setQuantity(e.target.value)}></input>} {!updateQuantity && product.quantity} <button class="btn btn-sm custom-button"  onClick={handleQuantity}>{updateQuantity ? 'Submit Change' : 'Change quantity'}</button> 
+                            </span>
+                            <span>
+                                Price: {updatePrice && <input class="custom-input" type="number" step="0.1" value={price} onChange={(e) => setPrice(e.target.value)}></input>} {!updatePrice && product.price} <button class="btn btn-sm custom-button" onClick={handlePrice}>{updatePrice ? 'Submit Change' : 'Change price'}</button>
+                            </span>
+                    </div>
+                    <div class="d-flex justify-content-center" style={{padding:'5px'}}>
+                        <button class="btn btn-primary w-50 custom-button" onClick={handleDelete}>Delete product</button>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     );
 }

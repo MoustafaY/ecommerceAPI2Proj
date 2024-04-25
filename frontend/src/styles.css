@@ -1,0 +1,86 @@
+.card {
+    background-color:#FFF4E9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 32rem;
+  }
+
+.row {
+  padding-bottom:10px;
+}
+
+select { 
+  border-radius:10px;
+}
+
+h1 {
+  text-shadow: 2px 2px 4px rgba(255, 127, 80, 0.5)
+  ;
+}
+
+.custom-button{
+  background-color:#FF7F50;
+  border-color:#FF7F50;
+  color:white;
+}
+
+.custom-button:hover{
+  background-color:#e57040;
+  border-color:#e57040;
+  color:white;
+}
+
+.btn.custom-button:active{
+  background-color:#FF7F50;;
+  border-color:#FF7F50;
+  color:white;
+}
+
+.error {
+  color:red;
+}
+
+.custom-nav {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.navbar {
+  background-color:#FFF4E9;
+}
+
+.custom-link{
+  text-decoration:none;
+  color:#3C3C3C;
+}
+
+.nav-item:hover{
+  background-color:#E5DCD2;
+  border-radius: 5px;
+}
+
+.icon:hover{
+  transform: scale(1.2);
+  cursor:pointer;
+}
+
+.custom-list{
+  list-style-type:none;
+  padding: 0;
+}
+
+.custom-item{
+  cursor: pointer;
+  margin-left: 0;
+  padding-left: 5px;
+  border-radius: 10px;
+  color:#3C3C3C;
+}
+
+.custom-item:hover{
+  background-color:#FFF4E9;
+}
+
+.custom-input{
+  width: 50px;
+}

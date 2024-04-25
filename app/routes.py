@@ -37,7 +37,7 @@ def deleteCustomer():
         customerService.delete(uuid.UUID(id))
         return jsonify({"message": "Customer deleted"}), 200
     except Exception as e:
-        return jsonify({"message": e}), 404
+        return jsonify({"message": str(e)}), 404
     
 @routesBP.route('/Customer', methods=['PUT'])
 @jwt_required()
@@ -48,7 +48,7 @@ def updateCustomer():
         updatedCustomer = customerService.update(uuid.UUID(id), name=data.get("name"))
         return jsonify(updatedCustomer), 200
     except Exception as e:
-        return jsonify({"message": e}), 409
+        return jsonify({"message": str(e)}), 409
 
 @routesBP.route('/Customer/balance', methods=['GET'])
 @jwt_required()
@@ -58,7 +58,7 @@ def getBalance():
         balance = customerService.get_balance(uuid.UUID(id))
         return jsonify(balance), 200
     except Exception as e:
-        return jsonify({"message": e}), 400
+        return jsonify({"message": str(e)}), 400
     
 @routesBP.route('/Customer', methods=['POST'])
 @jwt_required()
@@ -70,7 +70,7 @@ def payBalance():
         balance = customerService.get_balance(uuid.UUID(id))
         return jsonify(balance), 200
     except Exception as e:
-        return jsonify({"message": e}), 409
+        return jsonify({"message": str(e)}), 409
     
 @routesBP.route('/Customer', methods=["GET"])
 @jwt_required()
@@ -80,7 +80,7 @@ def getCustomer():
         customer = customerService.get_by_id(uuid.UUID(id))
         return jsonify(customer), 200
     except Exception as e:
-        return jsonify({"message": e}), 400
+        return jsonify({"message": str(e)}), 400
 
 @routesBP.route('/Customer/ShoppingCart', methods=['GET'])
 @jwt_required()
@@ -103,7 +103,7 @@ def addToShoppingCart():
     except NoResultFound:
         return jsonify({"message": "Customer not found"}), 404
     except Exception as e:
-        return jsonify({"message": e}), 409
+        return jsonify({"message": str(e)}), 409
 
 @routesBP.route('/Customer/ShoppingCart', methods=['PUT'])
 @jwt_required()
@@ -116,7 +116,7 @@ def updateShoppingCart():
     except NoResultFound:
         return jsonify({"message": "product not found"}), 404
     except Exception as e:
-        return jsonify({"message": e}), 409
+        return jsonify({"message": str(e)}), 409
     
 
 @routesBP.route('/Customer/ShoppingCart', methods=['DELETE'])
@@ -130,7 +130,7 @@ def removeFromShoppingCart():
     except NoResultFound:
         return jsonify({"message": "Product not found"}), 404
     except Exception as e:
-        return jsonify({"message": e}), 400
+        return jsonify({"message": str(e)}), 400
 
 
 @routesBP.route('/Customer/Transcripts', methods=["POST"])
@@ -146,8 +146,8 @@ def createTranscript():
         customerService.update(uuid.UUID(id), balance = transcript["sum"])
         shoppingCartService.confirm_order(uuid.UUID(id))
         return jsonify(transcript), 200
-    except Exception as e:
-        return jsonify({"message": e}), 404
+    except ValueError:
+        return jsonify({"message": "Quantity exceeds avaiable inventory"}), 404
 
 
 @routesBP.route('Customer/Transcripts', methods=['GET'])
@@ -158,7 +158,7 @@ def getTranscripts():
         transcripts = transcriptService.get_by_customer(uuid.UUID(id))
         return jsonify(transcripts), 200
     except Exception as e:
-        return jsonify({"message": e}), 404
+        return jsonify({"message": str(e)}), 404
 
 
 ## /Suppliers
@@ -181,8 +181,8 @@ def deleteSupplier():
         id = get_jwt_identity()
         supplierService.delete(uuid.UUID(id))
         return jsonify({"message": "Supplier deleted"}), 200
-    except Exception as e:
-        return jsonify({"message": e}), 404
+    except ValueError:
+        return jsonify({"message": "An error has occured"}), 404
     
 @routesBP.route('/Supplier', methods=['PUT'])
 @jwt_required()
@@ -193,7 +193,7 @@ def updateSupplier():
         updatedSupplier = supplierService.update(uuid.UUID(id), name=data.get("name"))
         return jsonify(updatedSupplier), 200
     except Exception as e:
-        return jsonify({"message": e}), 409
+        return jsonify({"message": str(e)}), 409
 
 @routesBP.route('/Supplier', methods=["GET"])
 @jwt_required()
@@ -214,8 +214,8 @@ def getProductsFromSupplier():
         id = get_jwt_identity()
         products = productService.get_all_by_supplier(uuid.UUID(id))
         return jsonify(products), 200
-    except Exception as e:
-        return jsonify({"message": e}), 404
+    except Exception:
+        return jsonify({"message": "An error has occured"}), 404
 
 @routesBP.route('/Supplier/Products', methods=['POST'])
 @jwt_required()
@@ -239,7 +239,7 @@ def deleteProduct():
         productService.delete(uuid.UUID(id))
         return jsonify({"message": "product deleted"}), 200
     except Exception as e:
-        return jsonify({"message": e}), 404
+        return jsonify({"message": str(e)}), 404
 
 @routesBP.route('/Supplier/Product', methods=['PUT'])
 @jwt_required()
@@ -250,7 +250,7 @@ def updateProduct():
         product = productService.update(uuid.UUID(id), uuid.UUID(data.get("id")), name=data.get("name"), quantity=data.get("quantity"), price=data.get("price"))
         return jsonify(product), 200
     except Exception as e:
-        return jsonify({"message": e}), 409
+        return jsonify({"message": str(e)}), 409
 
 
 ##/Products
@@ -269,7 +269,7 @@ def getshipments():
         shipments = shipmentService.get_all_by_supplier(uuid.UUID(id))
         return jsonify(shipments), 200
     except Exception as e:
-        return jsonify({"message": e}), 404
+        return jsonify({"message": str(e)}), 404
 
 @routesBP.route('/Supplier/Shipments', methods=['POST'])
 @jwt_required()
@@ -281,8 +281,8 @@ def createShipment():
         inventoryService.accept_shipment(inventory_products)
         shipment = shipmentService.create(inventory_products, date=datetime.now(), supplierId=uuid.UUID(id))
         return jsonify(shipment), 200
-    except Exception as e:
-        return jsonify({"message": e}), 409
+    except ValueError:
+        return jsonify({"message": "Quantity exceed available inventory"}), 409
     
 @routesBP.route('/Supplier/Shipment', methods=['GET'])
 @jwt_required()
@@ -293,7 +293,7 @@ def get_shipment():
         shipment = shipmentService.get_by_id(uuid.UUID(shipmentId))
         return jsonify(shipment), 200
     except Exception as e:
-        return jsonify({"message": e}), 400
+        return jsonify({"message": str(e)}), 400
 
 ## might delete, no need to delete shipment it is a record of the past
 @routesBP.route('/Supplier/shipment', methods=['DELETE'])
@@ -305,7 +305,7 @@ def delete_shipment():
         supplierService.delete_shipment(shipmentId)
         return jsonify({"message": "shipment deleted"}), 200
     except Exception as e:
-        return jsonify({"message": e}), 400
+        return jsonify({"message": str(e)}), 400
     
 @routesBP.route('/Supplier/Shipments', methods=['DELETE'])
 def resetshipment():
@@ -351,8 +351,7 @@ def login():
         return jsonify({'name': currentUser.name, 'token': access_token, 'user': user}), 200
     except NoResultFound:
         return jsonify({"message": "Incorrect password or email"}), 404
-    except Exception as e:
-        return jsonify({"message": e}), 409
+
 
 @routesBP.route('/Signup', methods=['POST'])
 def createUser():
@@ -368,8 +367,8 @@ def createUser():
             newUser = supplierService.create(name=name, email=email, password=password)
         access_token = create_access_token(identity=newUser["id"], expires_delta=timedelta(minutes=10))
         return jsonify({'name': newUser['name'], 'token': access_token, 'user': user}), 200
-    except Exception as e:
-        return jsonify({"message": e}), 409
+    except IntegrityError:
+        return jsonify({"message": "User already exists"}), 409
 
 @routesBP.route('/User', methods=['GET'])
 @jwt_required()

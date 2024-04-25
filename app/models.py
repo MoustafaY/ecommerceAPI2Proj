@@ -52,8 +52,8 @@ class Supplier(db.Model):
     name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    products = db.relationship('Product', backref='supplier')
-    shipmentHistory = db.relationship('Shipment', backref='supplier')
+    products = db.relationship('Product', backref='supplier', cascade="all, delete-orphan")
+    shipmentHistory = db.relationship('Shipment', backref='supplier', cascade="all, delete-orphan")
 
 class Shipment(db.Model):
     id = db.Column(db.UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
@@ -66,7 +66,7 @@ class ShipmentProduct(db.Model):
     name = db.Column(db.String(255), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     shipmentId = db.Column(db.UUID(as_uuid=True), db.ForeignKey('shipment.id'), nullable=True)
-    productId = db.Column(db.UUID(as_uuid=True), db.ForeignKey('product.id'), nullable=False)
+    productId = db.Column(db.UUID(as_uuid=True), db.ForeignKey('product.id'), nullable=True)
     product = db.relationship('Product', backref='shipment_product')
 
 class Inventory(db.Model):
@@ -82,7 +82,7 @@ class Product(db.Model):
     name = db.Column(db.String(255), nullable=False)
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    supplierId = db.Column(db.UUID(as_uuid=True), db.ForeignKey('supplier.id'), nullable=False)
+    supplierId = db.Column(db.UUID(as_uuid=True), db.ForeignKey('supplier.id'), nullable=True)
 
     __table_args__ = (
         unique_name_per_supplier,

@@ -32,15 +32,27 @@ function TranscriptList(){
     }
     
     return (
-        <div style={{height: '200px', overflowY: 'auto'}}>
-            <h1>transcripts</h1>
-            <ul>
-                {transcripts.map((transcript) => (
-                    <li key={transcript.id} onClick={() => onTranscriptClick(transcript)} style={{ cursor: 'pointer' }} >
-                        {transcript.date} 
-                    </li>
-                ))}
-            </ul>
+        <div>
+            <div class="row">
+                <div class="col d-flex justify-content-center">
+                    <h1 class="d-flex justify-content-center" style={{color:'#FFF4E9'}}>Transcripts</h1>
+                </div>
+            </div>
+            <div class="row">
+            <div class="d-flex justify-content-center">
+                <div class="card" style={{padding:'10px'}}>
+                    <div class="card-body" style={{height: '200px', overflowY: 'auto', backgroundColor: '#E6DCD1', padding:'0', borderRadius:'10px'}}>
+                    <ul class="custom-list">
+                        {transcripts.map((transcript) => (
+                            <li class="custom-item" key={transcript.id} onClick={() => onTranscriptClick(transcript)} style={{ cursor: 'pointer' }} >
+                                {transcript.date} 
+                            </li>
+                        ))}
+                    </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
     );
 }

@@ -29,7 +29,7 @@ const handleLogout = async () => {
     }
 
   }catch (error){
-    console.error("Error", error);
+    console.error("Error" + error);
   }
 };
 
@@ -52,31 +52,34 @@ const handleLogout = async () => {
         setError(data.message)
       }
     }catch(error){
-      console.error("Error: ". error);
+      console.error("Error: " + error);
       setError("An error occurred. Please try again later.");
     }
   };
 
       return (
         <>
-          <h1>Login</h1>
-          {error && <p>{error}</p>}
+          <div class="d-flex justify-content-center">
+            <h1 style={{color:'#FFF4E9'}}>Minizon</h1>
+          </div>
           <div>
-            <LoginCard onLogin={handleLogin} setError={setError} />
+            <LoginCard onLogin={handleLogin} setError={setError} error={error} />
           </div>
         </>
       );
 }
 
-function LoginCard({onLogin, setError}){
+function LoginCard({onLogin, setError, error}){
   return(
-    <>
-      <LoginForm onLogin={onLogin} setError={setError} />
-    </>
+    <div class="container d-flex justify-content-center">
+    <div class="card">
+      <LoginForm onLogin={onLogin} setError={setError} error={error} />
+    </div>
+    </div>
   );
 }
 
-function LoginForm({onLogin, setError}){
+function LoginForm({onLogin, setError, error}){
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [type, setType] = useState("Customer");
@@ -101,24 +104,39 @@ function LoginForm({onLogin, setError}){
   }
 
   return(
-    <div>
-      <label>Email:
-        <input type="text" name="username" value={email} onChange={(e) => setEmail(e.target.value)}  />
-      </label>
-      <label>Password:
-        <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </label>
-      <label>Type of user:
-        <select value={type} onChange={(e) => setType(e.target.value)}>
-          <option value="Customer">Customer</option>
-          <option value="Supplier">Supplier</option>
-        </select>
-      </label>
-      <button onClick={handleSubmit}>Log in</button>
-      <Link to="/signup">
-        <button>Sign up</button>
-      </Link>
-    </div>
+      <div class="card-body">
+      {error && <div class="row"><div class="col d-flex justify-content-center"><p class="error">{error}</p></div></div>}
+      <div class="row">
+        <div class="col d-flex justify-content-center">
+          <input class="form-control w-100" type="text" name="username" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}  />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col d-flex justify-content-center">
+          <input class="form-control w-100" type="password" name="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col d-flex justify-content-start">
+          <select value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="Customer">Customer</option>
+            <option value="Supplier">Supplier</option>
+          </select>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col d-flex justify-content-center">
+        <button class="btn btn-primary w-100 custom-button" onClick={handleSubmit}>Log in</button>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col d-flex justify-content-center">
+        <Link class="btn btn-primary w-100 custom-button" to="/signup">
+          Sign up
+        </Link>
+        </div>
+        </div>
+      </div>
   )
 }
 

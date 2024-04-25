@@ -35,16 +35,30 @@ function ShipmentList(){
     }
     
     return (
-        <div style={{height: '200px', overflowY: 'auto'}}>
-            <h1>shipments</h1>
-            <ul>
-                {shipments.map((shipment) => (
-                    <li key={shipment.id} onClick={() => onshipmentClick(shipment)} style={{ cursor: 'pointer' }} >
-                        {shipment.date} 
-                    </li>
-                ))}
-            </ul>
-            <button onClick={onCreateClick}>Make a shipment</button>
+        <div>
+        <div class="row">
+          <div class="col d-flex justify-content-center">
+            <h1 class="d-flex justify-content-center" style={{color:'#FFF4E9'}}>Shipments</h1>
+          </div>
+        </div>
+        <div class="row">
+            <div class="d-flex justify-content-center">
+                <div class="card" style={{padding:'10px'}}>
+                    <div class="card-body" style={{height: '200px', overflowY: 'auto', backgroundColor: '#E6DCD1', padding:'0', borderRadius:'10px'}}>
+                        <ul class="custom-list">
+                            {shipments.map((shipment) => (
+                                <li class="custom-item" key={shipment.id} onClick={() => onshipmentClick(shipment)} style={{ cursor: 'pointer' }} >
+                                    {shipment.date} 
+                                </li>
+                            ))}
+                        </ul>
+        </div>
+        <div class="d-flex justify-content-center" style={{padding:'5px'}}>
+            <button class="btn btn-primary w-50 custom-button" onClick={onCreateClick}>Make a shipment</button>
+        </div>
+        </div>
+        </div>
+        </div>
         </div>
     );
 }

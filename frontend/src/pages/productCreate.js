@@ -54,17 +54,37 @@ function ProductCreate(){
     
     return (
         <div>
-          {error && <span>{error}</span>}
-            <label>Name:
-                <input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)}  />
-            </label>
-            <label>Quantity:
-                <input type="number" name="quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)}  />
-            </label>
-            <label>Price:
-                <input type="number" step="0.1" name="price" value={price} onChange={(e) => setPrice(e.target.value)} />
-            </label>
-            <button onClick={handleSubmit}>Create product</button>
+          <div class="d-flex justify-content-center">
+            <div class="row d-flex justify-content-center" style={{paddingTop:'50px'}}>
+              <div class="card">
+                <div class="card-body">
+                <div class="row">
+                  <div class="col d-flex justify-content-center">
+                    {error && <p class="error">{error}</p>}
+                  </div>
+                </div>
+                  <div class="row">
+                    <input class="form-control w-100" placeholder="Name" type="text" name="name" value={name} onChange={(e) => setName(e.target.value)}  />
+                  </div>
+                  <div class="row d-flex justify-content-evenly">
+                    <div class="col d-flex justify-content-center">
+                      <label>Quantity:</label>
+                      <input class="custom-input"  type="number" name="quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)}  />
+                    </div>
+                    <div class="col d-flex justify-content-center">
+                      <label>Price:</label>
+                      <input class="custom-input" type="number" step="0.1" name="price" value={price} onChange={(e) => setPrice(e.target.value)} />
+                    </div>
+                  </div>
+                  <div class="row d-flex justify-content-center">
+                    <button class="btn btn-primary w-50 custom-button" onClick={handleSubmit}>Create product</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          
         </div>
     );
 }

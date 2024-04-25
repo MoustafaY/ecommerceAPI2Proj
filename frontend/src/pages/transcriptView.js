@@ -9,16 +9,28 @@ function TranscriptView(){
     const navigate = useNavigate();
     
     return (
-        <div style={{height: '200px', overflowY: 'auto'}}>
-            <h1>{transcript.date} transcript</h1> 
-            <ul>
-                {transcript.products.map((product, index) => (
-                   <li key={index}>
-                    {product.name} {product.quantity} {product.price}
-                   </li> 
-                ))}
-            </ul>
-            <span>Sum: {transcript.sum}</span>
+        <div>
+            <div class="row">
+                <div class="col d-flex justify-content-center">
+                    <h1 class="d-flex justify-content-center" style={{color:'#FFF4E9'}}>Transcript</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="d-flex justify-content-center">
+                    <div class="card" style={{padding:'10px'}}>
+                        <div class="card-body" style={{height: '200px', overflowY: 'auto', backgroundColor: '#E6DCD1', padding:'0', borderRadius:'10px'}}>
+                        <ul class="custom-list">
+                            {transcript.products.map((product, index) => (
+                            <li class="custom-item" key={index}>
+                                <b>Product: </b>{product.name}  <b>Quantity: </b>{product.quantity}  <b>Price: </b>{product.price}
+                            </li> 
+                            ))}
+                        </ul>
+                        </div>
+                        <span>Sum: {transcript.sum}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

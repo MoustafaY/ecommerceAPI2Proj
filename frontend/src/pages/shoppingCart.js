@@ -40,6 +40,8 @@ function ShoppingCart(){
             });
             if (response.ok){
                 const newProducts = products.filter(item => item.id != product.id);
+                const newPrice = sum - (product.quantity * product.price).toFixed(1);
+                setSum(parseFloat(newPrice).toFixed(1));
                 setProducts(newProducts);
             }
         }catch(error){
@@ -73,24 +75,48 @@ function ShoppingCart(){
     };
     
     return (
-        <div style={{height: '200px', overflowY: 'auto'}}>
-            <h1>Shopping Cart:</h1>
-            {error && <p>{error}</p>}
-            <ul>
-                {products.map((product) => (
-                    <li key={product.id}>
-                        <ShoppingCartItem product={product} navigate={navigate} token={token} onDelete={onDelete} onErrorSet={setError} />
-                    </li>
-                ))}
-            </ul>
-            <span>Total: {sum}</span>
-            <button onClick={onViewClick}>View Products</button>
-            <button onClick={onCreateClick}>Make order</button>
+        <div>
+            <div class="row">
+            <div class="col d-flex justify-content-center">
+                <h1 class="d-flex justify-content-center" style={{color:'#FFF4E9'}}>Shopping Cart</h1>
+            </div>
+            </div>
+            <div class="row">
+                <div class="d-flex justify-content-center">
+                    <div class="card" style={{padding:'10px'}}>
+                        <div class="card-body" style={{height: '200px', overflowY: 'auto', backgroundColor: '#E6DCD1', padding:'0', borderRadius:'10px'}}>
+                            <div class="row">
+                                <div class="col d-flex justify-content-center">
+                                    {error && <p class="error">{error}</p>}
+                                </div>
+                            </div>
+                            <ul class="custom-list">
+                                {products.map((product) => (
+                                    <li class="custom-item" key={product.id}>
+                                        <ShoppingCartItem product={product} navigate={navigate} token={token} onDelete={onDelete} onErrorSet={setError} onProductSet={setProducts} onSumSet={setSum} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div class="row d-flex justify-content-evenly">
+                            <div class="col d-flex justify-content-center">
+                                <span>Total: {sum}</span>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <button class="btn btn-sm custom-button" onClick={onViewClick}>View Products</button>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <button class="btn btn-sm custom-button" onClick={onCreateClick}>Make order</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
 
-function ShoppingCartItem({product, navigate, token, onDelete, onErrorSet}){
+function ShoppingCartItem({product, navigate, token, onDelete, onErrorSet, onProductSet, onSumSet}){
     const [isEdit, setIsEdit] = useState(false);
     const [quantity, setQuantity] = useState(product.quantity);
 
@@ -99,6 +125,7 @@ function ShoppingCartItem({product, navigate, token, onDelete, onErrorSet}){
             if(validate()){
                 product.quantity = quantity;
             updateProduct(product);
+            setQuantity(product.quantity);
             setIsEdit(false);
             }
         }
@@ -108,7 +135,7 @@ function ShoppingCartItem({product, navigate, token, onDelete, onErrorSet}){
     }
 
     const validate = () => {
-        if(quantity < 0){
+        if(quantity <= 0){
             onErrorSet("Invalid quantity amount");
             return false;
         }
@@ -125,9 +152,10 @@ function ShoppingCartItem({product, navigate, token, onDelete, onErrorSet}){
                 },
                 body: JSON.stringify(productData),
             });
-            if(!response.ok){
+            if(response.ok){
                 const data = await response.json();
-                onErrorSet(data.message);
+                onProductSet(data.products);
+                onSumSet(data.sum);
             }
         }catch(error){
             console.error("Error: " + error);
@@ -139,9 +167,17 @@ function ShoppingCartItem({product, navigate, token, onDelete, onErrorSet}){
     }
 
     return (
-        <>
-            {product.name}: {!isEdit && product.quantity} {!isEdit && <button onClick={handleClick}>Change product</button>} {isEdit && <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)}></input>} {isEdit && <button onClick={handleClick}>Submit change</button>} <button onClick={handleDelete}>Remove from cart</button>
-        </>
+        <div class="row d-flex justify-content-evenly">
+            <div class="col d-flex justify-content-start">
+                {product.name}: {!isEdit && product.quantity} {isEdit && <input class="custom-input" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)}></input>}
+            </div>
+            <div class="col d-flex justify-content-start">
+                {!isEdit && <button class="btn btn-sm custom-button" onClick={handleClick}>Change product</button>} {isEdit && <button class="btn btn-sm custom-button" onClick={handleClick}>Submit change</button>}
+            </div>
+            <div class="col d-flex justify-content-start">
+                <button class="btn btn-sm custom-button" onClick={handleDelete}>Remove from cart</button>
+            </div>  
+        </div>
     )
 
 }

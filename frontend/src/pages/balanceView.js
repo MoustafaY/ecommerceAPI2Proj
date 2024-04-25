@@ -68,13 +68,13 @@ function BalanceView (){
         }
     };
 
-    const onHomeClick = () =>{
-        navigate("/home");
-    }
-
     const validate = () => {
         if(balance <= 0){
-            setError("Invalid balance amount");
+            setError("Invalid payment amount");
+            return false;
+        }
+        else if(displayBalance - balance < 0){
+            setError("Payment exceeds balance");
             return false;
         }
         return true;
@@ -82,11 +82,34 @@ function BalanceView (){
 
 
     return(
-        <>
-        <h1>Balance:</h1>
-        {error && <p>{error}</p>}
-        <span>{displayBalance}</span> {!isPay && <button onClick={handleClick}>Pay balance</button>} {isPay && <input type="number" step="0.1" value={balance} onChange={(e) => setBalance(e.target.value)}></input>} {isPay && <button onClick={handleClick}>Submit</button>} <button onClick={onHomeClick}>Go to home page</button>
-        </>
+        <div>
+            <div class="row">
+                <div class="col d-flex justify-content-center">
+                    <h1 class="d-flex justify-content-center" style={{color:'#FFF4E9'}}>Balance</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="d-flex justify-content-center">
+                    <div class="card" style={{padding:'10px'}}>
+                        {error && <p class="error">{error}</p>}
+                        <div class="card-body">
+                            <div class="row d-flex justify-content-evenly">
+                                <div class="col d-flex justify-content-start">
+                                    <span>Balance: {displayBalance}</span>
+                                </div>
+                                <div class="col d-flex justify-content-start">
+                                    {!isPay && <button class="btn btn-sm custom-button" onClick={handleClick}>Pay balance</button>}
+                                    {isPay && <input class="custom-input" type="number" step="0.1" value={balance} onChange={(e) => setBalance(e.target.value)}></input>}
+                                </div>
+                                <div class="col d-flex jsutify-content-start">
+                                    {isPay && <button class="btn btn-sm custom-button" onClick={handleClick}>Submit</button>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     )
 
 }

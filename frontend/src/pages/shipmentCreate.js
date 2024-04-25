@@ -20,7 +20,9 @@ function ShipmentCreate(){
                   },
               });
               const result = await response.json();
-              setName(result[0].name);
+              if(result.length > 0){
+                setName(result[0].name);
+              }
               setProducts(result);
           }catch(error){
               console.error('Error fetching data: ' , error);
@@ -56,20 +58,41 @@ function ShipmentCreate(){
 
     const handleClick = () => {
         if(validate()){
-          shipment.push({"name": name, "quantity": quantity});
+          const newShipment = shipment.map(item => {
+            if(item.name === name){;
+              return{...item, quantity: parseInt(item.quantity) + parseInt(quantity)};
+            }
+            else{
+              return item;
+            }
+          });
+          if(shipment.find(item => item.name === name)){
+            setShipment(newShipment);
+          }
+          else{
+            shipment.push({"name": name, "quantity": quantity});
+          }
+          setError("");
           setQuantity(0);
         }
     }
 
     const handleSubmit = () => {
+      if(validateShipments()){
         handleCreate({"products": shipment});
+      } 
     }
 
     const validate = () => {
       if(quantity <= 0){
         setError("Invalid quantity amount");
         return false;
-      }else if(shipment.length){
+      }
+      return true;
+    }
+
+    const validateShipments = () => {
+      if(shipment.length === 0){
         setError("Shipment is empty");
         return false;
       }
@@ -77,31 +100,52 @@ function ShipmentCreate(){
     }
     
     return (
-        <>
-            <div>
-              {error && <p>{error}</p>}
-                <label>Name:
-                    <select value={name} onChange={(e) => setName(e.target.value)}>
-                      {products.map((fetch_product, index) => (
-                        <option key={index} value={fetch_product.name}>{fetch_product.name}</option>
-                      ))}
-                    </select>
-                </label>
-                <label>Quantity:
-                    <input type="number" name="quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)}  />
-                </label>
-                <button onClick={handleClick}>Add another product</button>
-                <button onClick={handleSubmit}>Make shipment</button>           
+        <div>
+            <div class="row" style={{paddingTop:'10px'}}>
+              <div class="d-flex justify-content-center">
+                <div class="card" style={{padding:'10px'}}>
+                <div class="row">
+                      <div class="col d-flex justify-content-center">
+                        {error && <p class="error">{error}</p>}
+                      </div>
+                    </div>
+                    <div class="card-body" style={{height: '200px', overflowY: 'auto', backgroundColor: '#E6DCD1', padding:'0', borderRadius:'10px'}}>
+                      <ul class="custom-list">
+                          {shipment.map((shipment_product, index) => (
+                              <li class="custom-item" key={index}>
+                                  {shipment_product.name} {shipment_product.quantity}
+                              </li>
+                          ))}
+                      </ul>
+                  </div>
+                  <div class="row d-flex justify-content-evenly">
+                    <div class="col d-flex justify-content-center">
+                      <label>Product:
+                          <select value={name} onChange={(e) => setName(e.target.value)}>
+                            {products.map((fetch_product, index) => (
+                              <option key={index} value={fetch_product.name}>{fetch_product.name}</option>
+                            ))}
+                          </select>
+                      </label>
+                    </div>
+                    <div class="col d-flex justify-content-center">
+                      <label>Quantity:
+                          <input class="custom-input" type="number" name="quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)}  />
+                      </label>
+                    </div>
+                  </div>
+                  <div class="row d-flex justify-content-evenly">
+                    <div class="col d-flex justify-content-center">
+                      <button class="btn btn-sm custom-button" onClick={handleClick}>Add product</button>
+                    </div>
+                    <div class="col d-flex justify-content-center">
+                      <button class="btn btn-sm custom-button" onClick={handleSubmit}>Make shipment</button>  
+                    </div>
+                  </div>
+                </div>
+              </div>            
             </div>
-            <h1>Products to ship:</h1>
-            <ul>
-                {shipment.map((shipment_product, index) => (
-                    <li key={index}>
-                        {shipment_product.name} {shipment_product.quantity}
-                    </li>
-                ))}
-            </ul>
-        </>
+        </div>
         
     );
 }

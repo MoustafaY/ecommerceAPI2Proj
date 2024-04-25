@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare, faTrash, faCartShopping, faReceipt, faMoneyBill, faEgg, faTruck } from '@fortawesome/free-solid-svg-icons';
+
 
 function Home(){
   const user = Cookies.get("user");
@@ -86,17 +89,33 @@ function Home(){
     
   return (
     <div>
-        <h1>Welcome, {name}</h1>
-        <button onClick={handleLogout}>Log out</button>
-        <button onClick={handleUpdate}>Change name</button>
-        <button onClick={handleDelete}>Delete account</button>
-        {user === "Supplier" && <button onClick={handleProductsView}>View Products</button>}
-        {user === "Supplier" && <button onClick={handleShipmentsView}>View Shipments</button>}
-        {user === "Customer" && <button onClick={handleShoppingCartView}>View Shopping cart</button>}
-        {user === "Customer" && <button onClick={handleTranscriptList}>View Transcripts</button>}
-        {user === "Customer" && <button onClick={handleBalanceView}>View Balance</button>}
+        <div class="row">
+          <div class="col d-flex justify-content-center">
+            <h1 className="d-flex justify-content-center" style={{color:'#FFF4E9'}}>Welcome, {name}</h1>
+          </div>
+        </div>
+        <div class="container">
+        <div class="row">
+          <div class="col d-flex justify-content-evenly">
+            <div class="icon" style={{textAlign: 'center'}}>
+              <FontAwesomeIcon  onClick={handleUpdate} icon={faPenToSquare} style={{ fontSize: '48px' }} />
+              <p>Change name</p>
+            </div>
+            <div class="icon" style={{textAlign: 'center'}}>
+              <FontAwesomeIcon onClick={handleDelete} icon={faTrash} style={{ fontSize: '48px' }} />
+              <p>Delete Account</p>
+            </div>
+            {user === "Supplier" && <div class="icon" style={{textAlign:'center'}}><FontAwesomeIcon onClick={handleProductsView} icon={faEgg} style={{fontSize: '48px'}} /><p>Products</p></div>}
+            {user === "Supplier" && <div class="icon" style={{textAlign:'center'}}><FontAwesomeIcon onClick={handleShipmentsView} icon={faTruck} style={{fontSize: '48px'}} /><p>Shipments</p></div>}
+            {user === "Customer" && <div class="icon" style={{textAlign:'center'}}><FontAwesomeIcon onClick={handleShoppingCartView} icon={faCartShopping} style={{fontSize: '48px'}} /><p>Shopping Cart</p></div>}
+            {user === "Customer" && <div class="icon" style={{textAlign:'center'}}><FontAwesomeIcon onClick={handleTranscriptList} icon={faReceipt} style={{fontSize: '48px'}} /><p>Transcripts</p></div>}
+            {user === "Customer" && <div class="icon" style={{textAlign:'center'}}><FontAwesomeIcon onClick={handleBalanceView} icon={faMoneyBill} style={{fontSize: '48px'}} /><p>Balance</p></div>}
+          </div>
+        </div>
+        </div>
     </div>
   );
 }
+
 
 export default Home;
