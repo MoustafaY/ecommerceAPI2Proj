@@ -1,12 +1,13 @@
 from flask import Flask
 
+
 def create_app(debug:bool = True, db_uri: str = "sqlite:///db.sqlite") -> Flask:
 
     #config 
     app = Flask(__name__, static_url_path="/")
     app.config["DEBUG"] = debug
     app.config["SECRET_KEY"] = "thisismyverysecretkey"
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:Contact1209#@minizon-database.c9ceh6uqe1om.eu-north-1.rds.amazonaws.com'
 
     #extensions
     from app.extensions import db, jwt, bcrypt

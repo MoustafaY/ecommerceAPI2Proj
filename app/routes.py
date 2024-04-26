@@ -11,7 +11,6 @@ import uuid
 routesBP = Blueprint('routes', __name__, url_prefix="/")
 
 ## /home
-
 @routesBP.route('/Home', methods=['GET', 'POST'])
 def homePage():
     return jsonify({"message": "welcome"}), 200
@@ -165,11 +164,6 @@ def getTranscripts():
 @routesBP.route('/Suppliers', methods=['GET'])
 def getSuppliers():
     return jsonify(supplierService.get_all()), 200
-
-@routesBP.route('/Suppliers', methods=['DELETE'])
-def resetSuppliers():
-    supplierService.reset()
-    return jsonify({"message": "Supplier table reset"}), 200
     
 
 
@@ -229,7 +223,7 @@ def createProduct():
         return jsonify({"message": "Product already exists"}), 409
     
 
- ##/Supplier/Product   
+##/Supplier/Product   
 @routesBP.route('/Supplier/Product', methods=['DELETE'])
 @jwt_required()
 def deleteProduct():
@@ -252,12 +246,6 @@ def updateProduct():
     except Exception as e:
         return jsonify({"message": str(e)}), 409
 
-
-##/Products
-@routesBP.route('/Products', methods=['DELETE'])
-def resetProducts():
-    productService.reset()
-    return jsonify({"message": "Product table reset"}), 200
 
 
 ##/Supplier/Shipments
@@ -295,22 +283,6 @@ def get_shipment():
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-## might delete, no need to delete shipment it is a record of the past
-@routesBP.route('/Supplier/shipment', methods=['DELETE'])
-@jwt_required()
-def delete_shipment():
-    try:
-        data = request.json
-        shipmentId = data.get("shipmentId")
-        supplierService.delete_shipment(shipmentId)
-        return jsonify({"message": "shipment deleted"}), 200
-    except Exception as e:
-        return jsonify({"message": str(e)}), 400
-    
-@routesBP.route('/Supplier/Shipments', methods=['DELETE'])
-def resetshipment():
-    shipmentService.reset()
-    return jsonify({"message": "reset shipment table"}), 200
 
 
 ##/Inventory
