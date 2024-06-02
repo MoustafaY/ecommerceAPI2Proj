@@ -111,3 +111,88 @@ None
   **Code:** 200 <br />
   **Content:** `{"message": "Customer deleted"}`
 
+
+#### Update Customer information
+Changes customer name
+
+* **URL** <br />
+/Customer
+
+* **Method** <br />
+PUT
+
+* **URL Params** <br />
+None
+
+* **Data Params** <br />
+**Required:** <br />
+```json
+{
+    "name": "suality"
+}
+```
+
+* **Success Response** <br />
+**Code:** 200 <br />
+**Content:** `{customer_object}`
+
+
+#### Add to shopping cart
+A customer adds a product from inventory to shopping cart
+
+* **URL** <br />
+/Customer/ShoppingCart
+
+* **Method** <br />
+POST
+
+* **URL Params** <br />
+None
+
+* **Data Params** <br />
+**Required:** <br />
+```json
+{
+    "products": [
+        {
+            "id": "aa4ff3d7-db92-4c84-a840-a70e7651df03",
+            "quantity": 2
+        },
+        {
+            "id": "9c37b607-75fe-460d-9aae-2f2275ca53f5",
+            "quantity": 3
+        }
+    ]
+}
+```
+
+* **Success Response** <br />
+**Code:** 200 <br />
+**Content:** <br />
+```json
+{
+    "id": "d78a2142-fc64-476d-b77c-61cf121f98b8",
+    "products": [
+        {
+            "id": "aa4ff3d7-db92-4c84-a840-a70e7651df03",
+            "name": "banana",
+            "price": 1.1,
+            "quantity": 2
+        },
+        {
+            "id": "9c37b607-75fe-460d-9aae-2f2275ca53f5",
+            "name": "apple",
+            "price": 5.0,
+            "quantity": 3
+        }
+    ],
+    "sum": 17.2
+}
+```
+
+* **Error Response** <br />
+  * **Code:** 400 <br />
+  **Content:** `{"message": "invalid input"}`
+  OR
+  * **Code: 404** <br />
+  **Content:** `{"message": "product not found"}`
